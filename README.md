@@ -26,7 +26,7 @@ Flask-SQLAlchemy
 Flask-GraphQL
 graphene
 graphene-sqlalchemy
-PyMySQL
+mysql-connector-python
 ```
 
 We're then going to start as if we were setting up a REST api, creating our app.py folder to run our app, and a models.py file to hold our database models
@@ -34,7 +34,7 @@ We're then going to start as if we were setting up a REST api, creating our app.
 Makes sure to conigur your app's database uri to:
 
 ```
-'mysql+pymysql://your_user:your_password@localhost/db_name'
+'mysql+mysqlconnector://your_user:your_password@localhost/db_name'
 ```
 
 In models.py we'll:
@@ -51,3 +51,34 @@ In schemas.py:
     - Create a Query type to query for Movie Objects (will require a resolver to execute the query)
     - Create an AddMovie mutation, specifiying the Arguments, and interaction with the db
     - Create a Mutation Type to incorporate our AddMovie Mutation
+
+"Plug" your schema into the app.
+
+
+Example Mutation:
+
+```graphql
+mutation{
+  createDirector(name: "Christopher Nolan"){
+    director{
+      name,
+      id
+    }
+  }
+}
+```
+
+Example Query:
+
+```graphql
+query{
+  searchDirector(id:1){ #running resolve_search_director()
+    name, #I want to see the name
+    movies{ # Utilizing the one-to-many relationship to see all the movies they directed
+      title, #Because movies are an object and GraphQL doesn't want to over-serve 
+      year   #I need to specify what about the movie object I want to se
+    }
+  }
+}
+
+```
